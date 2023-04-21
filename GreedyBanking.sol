@@ -1,6 +1,6 @@
 pragma solidity >=0.4.22 <=0.8.17;
 //MIT licence
-//bank contract with fees after first deposit. 
+//bank contract with fees after first deposit. Contract is exploitable, can withdraw full account balance and then deposite it again plus your deposite to avoide my fees!
 contract GreedyBanker {
 
     mapping(address=>uint) balances;
