@@ -1,0 +1,87 @@
+pragma solidity >=0.4.22 <=0.8.17;
+//SPDX-License-Identifier: MIT
+contract EtherElection {
+    address[3] candidates = [address(0),address(0),address(0)];  //change to a mapping?
+    uint candidateCount = 0;
+    uint8[3] votes = [0,0,0];
+    bool votingDone;
+    address voteWinner = address(0);
+    mapping(address => bool) voted;
+
+    uint votecount = 0;
+    bool hasCollected = false;
+    address owner;
+
+    constructor(){
+        owner = msg.sender;
+    }
+
+    function enroll() public payable {
+        require(msg.value == 1 ether, "you cheap fuck gimmy da 1 money");
+        require(candidateCount !=3,"their are al;ready 3");
+        require(msg.value == 1 ether, "you cheap fuck gimmy da 1 money");
+        require(candidates[0] != msg.sender,"tallyhoe! Your the first candidate!"); 
+        require(candidates[1] != msg.sender,"tallyhoe! Your the second candidate!");
+        candidates[candidateCount] = msg.sender;
+        candidateCount+=1;
+        // Write your code here
+    }
+
+    function vote(address candidate) public payable {
+        require(msg.value == 10000, "wrong fee");
+        require(candidateCount==3, "their are not 3 candidates");
+        require(msg.value == 10000, "wrong fee");
+        require(votingDone==false, "votings finished");
+        require(voted[msg.sender]==false, "you already voted");
+        if (candidates[0]==candidate){
+            votes[0]+=1;
+            votecount+=1;
+            voted[msg.sender]=true;
+            if(votes[0]==5){
+                voteWinner = candidate;
+                votingDone = true;
+            }
+        }
+        if (candidates[1]==candidate){
+            votes[1]+=1;
+            votecount+=1;
+            voted[msg.sender]=true;
+            if(votes[1]==5){
+                voteWinner = candidate;
+                votingDone = true;
+            }
+        }
+        if (candidates[2]==candidate){
+            votes[2]+=1;
+            votecount+=1;
+            voted[msg.sender]=true;
+            if(votes[2]==5){
+                voteWinner = candidate;
+                votingDone = true;
+            }
+        
+        }
+        
+        // Write your code here
+    }
+
+    function getWinner() public view returns (address) {
+        require(votingDone);
+        return voteWinner;
+        // Write your code here
+    }
+
+    function claimReward() public {
+        require(msg.sender == voteWinner && hasCollected == false);
+        // Write your code here
+        hasCollected=true;
+        (bool sent, ) = payable(msg.sender).call{value: 3 ether}("");
+        require(sent);
+    }
+
+    function collectFees() public {
+        require(hasCollected && msg.sender == owner);
+        selfdestruct(payable(owner));
+        // Write your code here
+    }
+}
